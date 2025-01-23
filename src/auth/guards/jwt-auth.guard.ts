@@ -2,12 +2,14 @@ import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from
 import { JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from 'src/types';
 import { AuthService } from '../auth.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JWTAuthGuard implements CanActivate {
    constructor(
       private readonly jwtService: JwtService,
-      private readonly authService: AuthService
+      private readonly authService: AuthService,
+      private readonly configService: ConfigService
    ) {}
 
    async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -16,10 +18,10 @@ export class JWTAuthGuard implements CanActivate {
 
       if (!token) throw new UnauthorizedException('No token provided');
 
-      console.log('token', token);
-
       try {
-         const decodedToken = this.jwtService.verify(token, { secret: 'qwertyuiop' });
+         const decodedToken = await this.jwtService.verifyAsync(token, {
+            secret: this.configService.get('JWT_SECRET')
+         });
 
          if (!decodedToken) throw new UnauthorizedException('Invalid token');
 

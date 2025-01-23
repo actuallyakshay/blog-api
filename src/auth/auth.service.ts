@@ -15,7 +15,7 @@ export class AuthService {
       const { user } = input;
       const foundUser = await this.usersService.createUser({ user });
       const payload: IJwtPayload = { email: foundUser.email, sub: foundUser.googleId, id: foundUser.id };
-      return { token: this.jwtService.sign(payload) };
+      return { token: await this.jwtService.signAsync(payload) };
    }
 
    validateUser(input: { user: IJwtPayload }): Promise<UsersEntity> {

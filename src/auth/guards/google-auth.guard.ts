@@ -13,7 +13,7 @@ export class GoogleAuthGuard implements CanActivate {
 
    async canActivate(context: ExecutionContext): Promise<boolean> {
       const request = context.switchToHttp().getRequest();
-      const idToken = request.body?.idToken;
+      const idToken = request.headers.authorization?.split('Bearer ')[1];
 
       if (!idToken) throw new UnauthorizedException('No Google token provided');
 

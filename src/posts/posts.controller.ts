@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { IJwtPayload } from 'src/types';
@@ -29,5 +29,17 @@ export class PostsController {
    @ApiResponse({ status: 200, type: PostsEntity })
    createOrUpdatePost(@CurrentUser() user: IJwtPayload, @Body() body: CreatePostDto) {
       return this.postsService.createOrUpdatePost({ user, body });
+   }
+
+   @Get('/:id')
+   @ApiResponse({ status: 200, type: PostsEntity })
+   getPostById(@Param('id') id: string) {
+      return this.postsService.getPostById({ id });
+   }
+
+   @Delete('/:id')
+   @ApiResponse({ status: 200, type: String })
+   deletePost(@Param('id') id: string) {
+      return this.postsService.deletePost({ id });
    }
 }

@@ -18,7 +18,7 @@ export class PostsService {
       } = input;
       return this.postsRepository
          .createQueryBuilder('posts')
-         .leftJoin('posts.user', 'user')
+         .leftJoinAndSelect('posts.user', 'user')
          .where('user.id = :id', { id })
          .orderBy('posts.createdAt', 'DESC')
          .getMany();
@@ -32,7 +32,8 @@ export class PostsService {
 
    getAllPosts() {
       return this.postsRepository.find({
-         order: { createdAt: 'DESC' }
+         order: { createdAt: 'DESC' },
+         relations: ['user']
       });
    }
 
@@ -45,5 +46,16 @@ export class PostsService {
 
       const result = await this.postsRepository.upsert({ ...body, user: { id } }, ['title', 'user.id']);
       return this.postsRepository.findOneBy({ id: result.identifiers?.[0]?.id });
+   }
+
+   getPostById(input: { id: string }): Promise<PostsEntity> {
+      const { id } = input;
+      return this.postsRepository.findOneOrFail({ where: { id }, relations: ['user'] });
+   }
+
+   async deletePost(input: { id: string }): Promise<string> {
+      const { id } = input;
+      await this.postsRepository.delete({ id });
+      return id;
    }
 }

@@ -21,7 +21,6 @@ COPY yarn.lock .
 
 ENV NODE_ENV production
 
-
 RUN yarn install --only=production && npm cache clean --force
 
 COPY . .
